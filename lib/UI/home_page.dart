@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/UI/user_page.dart';
 import 'package:flutter_application_1/services/notification_services.dart';
 import 'package:flutter_application_1/services/theme_services.dart';
 import 'package:get/get.dart';
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
       leading: GestureDetector(
         onTap: () {
           ThemeServices().switchTheme();
-          notifyHelper.displayNotification(
+          notifyHelper.odisplayNotification(
               title: "Theme change",
               body: Get.isDarkMode
                   ? "Chuyen che do sáng thanh cong"
@@ -52,9 +53,17 @@ class _HomePageState extends State<HomePage> {
             // đổi màu biểu tượng theo chủ đề
             color: Get.isDarkMode ? Colors.white : Colors.black),
       ),
-      actions: const [
-        CircleAvatar(
-          backgroundImage: AssetImage("images/avatar.jpg"),
+      actions: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UserPage()),
+            );
+          },
+          child: CircleAvatar(
+            backgroundImage: AssetImage("images/avatar.jpg"),
+          ),
         ),
         SizedBox(width: 20),
       ],
