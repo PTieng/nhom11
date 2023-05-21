@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
       leading: GestureDetector(
         onTap: () {
           ThemeServices().switchTheme();
-          notifyHelper.odisplayNotification(
+          notifyHelper.displayNotification(
               title: "Theme change",
               body: Get.isDarkMode
                   ? "Chuyen che do sáng thanh cong"
