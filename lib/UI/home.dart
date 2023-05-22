@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/UI/add_task_bar.dart';
 import 'package:flutter_application_1/UI/second_screen.dart';
 import 'package:flutter_application_1/UI/theme.dart';
+import 'package:flutter_application_1/UI/user_page.dart';
 import 'package:flutter_application_1/UI/widget/button.dart';
 import 'package:flutter_application_1/service/local_notification.dart';
 import 'package:flutter_application_1/service/theme_service.dart';
@@ -114,15 +115,22 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       actions: [
-        CircleAvatar(
-          backgroundImage: AssetImage("images/avatar.jpg"),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UserPage()),
+            );
+          },
+          child: CircleAvatar(
+            backgroundImage: AssetImage("images/avatar.jpg"),
+          ),
         ),
-        SizedBox(
-          width: 20,
-        ),
+        SizedBox(width: 20),
       ],
     );
   }
+}
 
   // void listenToNotification() =>
   //     service.onNotificationClick.stream.listen(onNoticationListener);
@@ -134,4 +142,4 @@ class _HomePageState extends State<HomePage> {
   //         context, MaterialPageRoute(builder: (context) => SecondScreen()));
   //   }
   // }
-}
+
