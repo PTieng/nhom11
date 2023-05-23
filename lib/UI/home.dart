@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    LocalNotificationService().initialize();
+    LocalNotificationService().initializeNotification();
   }
 
   @override
@@ -98,7 +98,6 @@ class _HomePageState extends State<HomePage> {
   _appBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: context.theme.colorScheme.background,
       leading: GestureDetector(
         onTap: () {
           ThemeService().switchTheme();
@@ -131,15 +130,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-  // void listenToNotification() =>
-  //     service.onNotificationClick.stream.listen(onNoticationListener);
-
-  // void onNoticationListener(String? payload) {
-  //   if (payload != null && payload.isNotEmpty) {
-  //     print('payload $payload');
-  //     Navigator.push(
-  //         context, MaterialPageRoute(builder: (context) => SecondScreen()));
-  //   }
-  // }
-

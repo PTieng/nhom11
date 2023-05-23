@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/db/db_helper.dart';
 import 'package:flutter_application_1/login/login_screen.dart';
 import 'package:flutter_application_1/login/signup_screen.dart';
 import 'package:flutter_application_1/service/theme_service.dart';
@@ -9,6 +10,8 @@ import 'UI/home.dart';
 import 'UI/theme.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DBHelper.initDb();
   await GetStorage.init();
   runApp(const MyApp());
 }

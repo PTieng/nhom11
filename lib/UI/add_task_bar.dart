@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/UI/theme.dart';
+import 'package:flutter_application_1/UI/widget/button.dart';
 import 'package:flutter_application_1/UI/widget/input_field.dart';
+import 'package:flutter_application_1/controller/task_controller.dart';
+import 'package:flutter_application_1/models/task.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +16,9 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  final TaskController _taskController = Get.put(TaskController());
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   String _endTime = "8:00 PM";
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
@@ -30,10 +36,11 @@ class _AddTaskPageState extends State<AddTaskPage> {
     "Weekly",
     "Monthly",
   ];
+  int _selectedColor = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.theme.colorScheme.background,
+      // backgroundColor: context.theme.colorScheme.background,
       appBar: _appBar(context),
       body: Container(
         padding: const EdgeInsets.only(left: 20, right: 20),
@@ -45,8 +52,16 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 "Add task",
                 style: headingStyle,
               ),
-              MyInputField(title: "Title", hint: "Enter your title"),
-              MyInputField(title: "Note", hint: "Enter your note"),
+              MyInputField(
+                title: "Title",
+                hint: "Enter your title",
+                controller: _titleController,
+              ),
+              MyInputField(
+                title: "Note",
+                hint: "Enter your note",
+                controller: _noteController,
+              ),
               MyInputField(
                   title: "Date",
                   hint: DateFormat.yMd().format(_selectedDate),
@@ -152,16 +167,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   }).toList(),
                 ),
               ),
+              SizedBox(
+                height: 18,
+              ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Column(
-                    children: [
-                      Text(
-                        "Color",
-                        style: titleStyle,
-                      )
-                    ],
-                  )
+                  _colorPallete(),
+                  MyButton(label: "Create Task", onTap: () => _validateDate()),
                 ],
               )
             ],
@@ -171,10 +185,84 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
   }
 
+  _addTaskToDb() async{
+    await _taskController.addTask(
+     task: Task(
+      note: _noteController.text,
+      title: _titleController.text,
+      date: DateFormat.yMd().format(_selectedDate),
+      startTime: _startTime,
+      endTime: _endTime,
+      remind: _selectedRemind,
+      repeat: _selectedRepeat,
+      color: _selectedColor,
+      isCompleted: 0,
+    )
+   );
+  }
+
+  _validateDate() {
+    if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
+      _addTaskToDb();
+      Get.back();
+    } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
+      Get.snackbar("Required", "All field are required",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.white,
+          icon: Icon(Icons.warning_amber_rounded));
+    }
+  }
+
+  _colorPallete() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Color",
+          style: titleStyle,
+        ),
+        SizedBox(
+          height: 8.0,
+        ),
+        Wrap(
+          children: List<Widget>.generate(
+            3,
+            (int index) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedColor = index;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: CircleAvatar(
+                    radius: 14,
+                    backgroundColor: index == 0
+                        ? primaryColor
+                        : index == 1
+                            ? pinkish
+                            : yellowish,
+                    child: _selectedColor == index
+                        ? Icon(
+                            Icons.done,
+                            color: Colors.white,
+                            size: 16,
+                          )
+                        : Container(),
+                  ),
+                ),
+              );
+            },
+          ),
+        )
+      ],
+    );
+  }
+
   _appBar(BuildContext context) {
     return AppBar(
       elevation: 0,
-      backgroundColor: context.theme.colorScheme.background,
       leading: GestureDetector(
         onTap: () {
           Get.back();

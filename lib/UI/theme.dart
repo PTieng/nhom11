@@ -12,7 +12,6 @@ const primaryColor = blueish;
 
 class Themes {
   static final light = ThemeData(
-      backgroundColor: Colors.white,
       primaryColor: Colors.white,
       brightness: Brightness.light);
   static final dark = ThemeData(
@@ -36,6 +35,7 @@ TextStyle get headingStyle {
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: Get.isDarkMode ? Colors.white : Colors.black,
+    
   ));
 }
 

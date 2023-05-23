@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 
 class LocalNotificationService {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  initialize() async {
+  initializeNotification() async {
     final AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings("appicon");
 
@@ -15,28 +14,29 @@ class LocalNotificationService {
         InitializationSettings(
       android: initializationSettingsAndroid,
     );
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-        onSelectNotification: selectNotification);
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestPermission();
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+         onSelectNotification: selectNotification
+        );
   }
 
+  notificationDetails() {
+    return const NotificationDetails(
+        android: AndroidNotificationDetails(
+      'channelId',
+      'channelName',
+      importance: Importance.max,
+    ));
+  }
 
-showNotification({required String title, required String body}) async {
-    print("doing test");
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'your channel id', 'your channel name',
-        importance: Importance.max, priority: Priority.high);
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
-        android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      platformChannelSpecifics,
-      payload: 'Default sound',
-    );
-}
+  Future showNotification(
+      {int id = 0, String? title, String? body, String? payload}) async {
+    return flutterLocalNotificationsPlugin.show(
+        id, title, body, await notificationDetails());
+  }
 
   Future selectNotification(String? payload) async {
     if (payload != null) {
