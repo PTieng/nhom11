@@ -106,16 +106,29 @@ class _HomePageState extends State<HomePage> {
                     },
                     clr: blueish,
                     context: context),
-                SizedBox(
-                  height: 20,
-                ),
-                  _bottomSheetButton(
-                      label: "Delete Task",
-                      onTap: () {
-                        Get.back();
-                      },
-                      clr:Colors.red[300]!,
-                      context: context),
+            _bottomSheetButton(
+                label: "Delete Task",
+                onTap: () {
+                  _taskController.delete(task);
+                  _taskController.getTaks();
+                  Get.back();
+                },
+                clr: Colors.red[300]!,
+                context: context),
+            SizedBox(
+              height: 20,
+            ),
+            _bottomSheetButton(
+                label: "Close",
+                onTap: () {
+                  Get.back();
+                },
+                clr: Colors.red[300]!,
+                isClose: true,
+                context: context),
+            SizedBox(
+              height: 10,
+            )
           ],
         ),
       ),
@@ -138,10 +151,21 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
           border: Border.all(
             width: 2,
-            color: isClose == true ? Colors.red : clr,
+            color: isClose == true
+                ? Get.isDarkMode
+                    ? Colors.grey[600]!
+                    : Colors.grey[300]!
+                : clr,
           ),
           borderRadius: BorderRadius.circular(20),
-          color: isClose == true ? Colors.red : clr,
+          color: isClose == true ? Colors.transparent : clr,
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style:
+                isClose ? titleStyle : titleStyle.copyWith(color: Colors.white),
+          ),
         ),
       ),
     );
