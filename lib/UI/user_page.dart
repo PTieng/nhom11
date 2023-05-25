@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/login/db/databaseHelper.dart';
+import 'package:flutter_application_1/login/login_screen.dart';
 import 'package:get/get.dart';
+import 'package:flutter_application_1/login/model/user.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({Key? key}) : super(key: key);
@@ -10,6 +13,24 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   bool isDarkMode = Get.isDarkMode;
+  late User currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  Future<void> getCurrentUser() async {
+    DatabaseHelper databaseHelper = DatabaseHelper();
+    User? user = await databaseHelper.getCurrentUser();
+
+    if (user != null) {
+      setState(() {
+        currentUser = user;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,117 +82,39 @@ class _UserPageState extends State<UserPage> {
             const SizedBox(
               height: 20,
             ),
-            const Text(
-              'User Name',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              currentUser.name,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 5,
             ),
-            const Text(
-              'user@gmail.com',
-              style: TextStyle(fontSize: 15),
+            Text(
+              currentUser.email,
+              style: const TextStyle(fontSize: 15),
             ),
             Container(
               margin: const EdgeInsets.all(20),
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.person),
-                      Text(
-                        'User Name',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        'Anasnda',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
+                  buildProfileItem(Icons.person, 'Name', currentUser.name),
                   const Divider(
                     color: Color.fromARGB(255, 182, 180, 180),
                     thickness: 1.0,
                   ),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.email),
-                      Text(
-                        'Email ',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Text(
-                        'user@gmail.com',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
+                  buildProfileItem(Icons.email, 'Email', currentUser.email),
                   const Divider(
                     color: Color.fromARGB(255, 182, 180, 180),
                     thickness: 1.0,
                   ),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.phone),
-                      Text(
-                        'Phone ',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        '0315464682',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
+                  buildProfileItem(Icons.phone, 'Phone', currentUser.phone),
                   const Divider(
                     color: Color.fromARGB(255, 182, 180, 180),
                     thickness: 1.0,
                   ),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.location_on),
-                      Text(
-                        'Address ',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text(
-                        'Ho Chi Minh',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
+                  buildProfileItem(
+                      Icons.location_on, 'Address', currentUser.address),
                   const Divider(
                     color: Color.fromARGB(255, 182, 180, 180),
                     thickness: 1.0,
@@ -182,7 +125,12 @@ class _UserPageState extends State<UserPage> {
                   Container(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                      },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                         backgroundColor: Colors.red,
@@ -199,6 +147,28 @@ class _UserPageState extends State<UserPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildProfileItem(IconData icon, String title, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Icon(icon),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 15,
+          ),
+        ),
+      ],
     );
   }
 }
