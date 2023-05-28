@@ -2,10 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/UI/home.dart';
 import 'package:flutter_application_1/login/colors.dart';
-import 'package:flutter_application_1/login/db/databaseHelper.dart';
 import 'package:flutter_application_1/login/input/textField_screen.dart';
-import 'package:flutter_application_1/login/model/user.dart';
 import 'package:flutter_application_1/login/signup_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -41,15 +40,16 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    DatabaseHelper databaseHelper = DatabaseHelper();
-    User? user = await databaseHelper.getUser(email, password);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedEmail = prefs.getString('email');
+    String? savedPassword = prefs.getString('password');
 
-    if (user != null) {
-      Navigator.push(
+    if (email == savedEmail && password == savedPassword) {
+      Navigator.pop(context);
+      Navigator.pushNamedAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
+        '/home',
+        (route) => false,
       );
     } else {
       showDialog(
@@ -107,13 +107,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 30,
               ),
-              ElevatedButton(
-                onPressed: login,
-                child: Text(
-                  'Sign In',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
+              signIn_UpButton(context, true, login),
               signUpOption(context),
             ],
           ),
@@ -134,7 +128,9 @@ Row signUpOption(BuildContext context) {
       GestureDetector(
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => SignUpPage()));
+            context,
+            MaterialPageRoute(builder: (context) => SignUpPage()),
+          );
         },
         child: const Text(
           "Sign Up",

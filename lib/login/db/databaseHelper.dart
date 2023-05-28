@@ -35,7 +35,7 @@ class DatabaseHelper {
         password TEXT,  
         address TEXT,
         phone TEXT
-      )
+      )a
     ''');
   }
 
