@@ -7,7 +7,7 @@ import 'package:flutter_application_1/login/signup_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -40,16 +40,15 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? savedEmail = prefs.getString('email');
-    String? savedPassword = prefs.getString('password');
+    DatabaseHelper databaseHelper = DatabaseHelper();
+    User? user = await databaseHelper.getUser(email, password);
 
-    if (email == savedEmail && password == savedPassword) {
-      Navigator.pop(context);
-      Navigator.pushNamedAndRemoveUntil(
+    if (user != null) {
+      Navigator.push(
         context,
-        '/home',
-        (route) => false,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
       );
     } else {
       showDialog(
@@ -107,7 +106,13 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 30,
               ),
-              signIn_UpButton(context, true, login),
+              ElevatedButton(
+                onPressed: login,
+                child: Text(
+                  'Sign In',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
               signUpOption(context),
             ],
           ),
@@ -122,7 +127,7 @@ Row signUpOption(BuildContext context) {
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       const Text(
-        "Don't have an account? ",
+        "Don't have account? ",
         style: TextStyle(color: Colors.white70),
       ),
       GestureDetector(

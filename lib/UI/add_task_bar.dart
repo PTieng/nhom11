@@ -185,9 +185,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
   }
 
-  _addTaskToDb() async{
-    await _taskController.addTask(
-     task: Task(
+  _addTaskToDb() async {
+    int value = await _taskController.addTask(
+        task: Task(
       note: _noteController.text,
       title: _titleController.text,
       date: DateFormat.yMd().format(_selectedDate),
@@ -197,8 +197,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
       repeat: _selectedRepeat,
       color: _selectedColor,
       isCompleted: 0,
-    )
-   );
+    ));
+    print("$value");
   }
 
   _validateDate() {

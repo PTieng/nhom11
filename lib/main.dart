@@ -25,17 +25,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final box = GetStorage();
     return GetMaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: Themes.light,
-      darkTheme: Themes.dark,
-      themeMode: ThemeService().theme,
-      initialRoute: box.read('isLoggedIn') == true ? '/home' : '/login',
-      getPages: [
-        GetPage(name: '/login', page: () => LoginPage()),
-        GetPage(name: '/signup', page: () => SignUpPage()),
-        GetPage(name: '/home', page: () => HomePage()),
-      ],
-    );
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: Themes.light,
+        darkTheme: Themes.dark,
+        themeMode: ThemeService().theme,
+        home: LoginPage());
   }
 }

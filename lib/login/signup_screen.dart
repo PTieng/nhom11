@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/UI/home.dart';
 import 'package:flutter_application_1/login/colors.dart';
+import 'package:flutter_application_1/login/db/databaseHelper.dart';
 import 'package:flutter_application_1/login/input/textField_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_1/login/model/user.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -45,35 +46,41 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('email', email);
-    prefs.setString('password', password);
-    prefs.setString('name', userName);
-    prefs.setString('phone', phone);
-    prefs.setString('address', address);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Success'),
-          content: const Text('Sign up successful.'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/login',
-                  (route) => false,
-                );
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+    User newUser = User(
+      name: userName,
+      email: email,
+      password: password,
+      address: address,
+      phone: phone,
     );
+
+    DatabaseHelper databaseHelper = DatabaseHelper();
+    int userId = await databaseHelper.insertUser(newUser);
+
+    if (userId > 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Sign up failed. Please try again.'),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -131,10 +138,13 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 reusableTextField("Enter Address", Icons.location_on, false,
                     _addressTextController),
-                const SizedBox(
-                  height: 30,
+                ElevatedButton(
+                  onPressed: signUp,
+                  child: Text(
+                    'Sign Up',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                signIn_UpButton(context, false, signUp),
               ],
             ),
           ),
