@@ -7,7 +7,7 @@ import 'package:flutter_application_1/login/signup_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -40,10 +40,11 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    DatabaseHelper databaseHelper = DatabaseHelper();
-    User? user = await databaseHelper.getUser(email, password);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedEmail = prefs.getString('email');
+    String? savedPassword = prefs.getString('password');
 
-    if (user != null) {
+    if (email == savedEmail && password == savedPassword) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -106,13 +107,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 30,
               ),
-              ElevatedButton(
-                onPressed: login,
-                child: Text(
-                  'Sign In',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
+              signIn_UpButton(context, true, login),
               signUpOption(context),
             ],
           ),
@@ -127,7 +122,7 @@ Row signUpOption(BuildContext context) {
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       const Text(
-        "Don't have account? ",
+        "Don't have an account? ",
         style: TextStyle(color: Colors.white70),
       ),
       GestureDetector(
