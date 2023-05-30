@@ -97,7 +97,7 @@ class TaskTile extends StatelessWidget {
         return blueish;
       case 1:
         return pinkish;
-      case 3:
+      case 2:
         return yellowish;
       default:
         return blueish;
