@@ -251,6 +251,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            // nút nhấn ADD Task
             MyButton(
                 label: "+ Add task",
                 onTap: () async {
@@ -265,6 +266,7 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       elevation: 0,
       leading: GestureDetector(
+        //thông báo và sự kiện dark mode
         onTap: () {
           ThemeService().switchTheme();
           LocalNotificationService().showNotification(
