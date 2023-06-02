@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/UI/home.dart';
@@ -40,18 +41,19 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? savedEmail = prefs.getString('email');
-    String? savedPassword = prefs.getString('password');
-
-    if (email == savedEmail && password == savedPassword) {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => HomePage(),
         ),
       );
-    } else {
+    } catch (e) {
       showDialog(
         context: context,
         builder: (context) {
@@ -107,7 +109,18 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 30,
               ),
-              signIn_UpButton(context, true, login),
+              signIn_UpButton(context, true, () {
+                FirebaseAuth.instance
+                    .signInWithEmailAndPassword(
+                        email: _emailTextController.text,
+                        password: _passwordTextController.text)
+                    .then((value) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HomePage()));
+                }).onError((error, stackTrace) {
+                  print("Error ${error.toString()}");
+                });
+              }),
               signUpOption(context),
             ],
           ),
