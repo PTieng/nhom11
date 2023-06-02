@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/UI/home.dart';
 import 'package:flutter_application_1/login/colors.dart';
 import 'package:flutter_application_1/login/input/textField_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -20,13 +24,16 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _addressTextController = TextEditingController();
 
   Future<void> signUp() async {
+    // Lấy thông tin từ các trường văn bản
     String userName = _userNameTextController.text;
     String email = _emailTextController.text;
     String password = _passwordTextController.text;
     String phone = _phoneTextController.text;
     String address = _addressTextController.text;
 
+    // Kiểm tra nếu có thông tin bị bỏ trống
     if (userName.isEmpty || email.isEmpty || password.isEmpty) {
+      // Hiển thị thông báo lỗi
       showDialog(
         context: context,
         builder: (context) {
@@ -45,35 +52,64 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('email', email);
-    prefs.setString('password', password);
-    prefs.setString('name', userName);
-    prefs.setString('phone', phone);
-    prefs.setString('address', address);
+    try {
+      // Tạo một tài khoản người dùng trong Firebase Authentication
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Success'),
-          content: const Text('Sign up successful.'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/login',
-                  (route) => false,
-                );
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+      // Lấy ID người dùng đã tạo
+      String userId = userCredential.user!.uid;
+
+      // Lưu thông tin người dùng vào Firestore
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'name': userName,
+        'email': email,
+        'phone': phone,
+        'address': address,
+      });
+
+      // Hiển thị thông báo thành công
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Success'),
+            content: const Text('Sign up successful.'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (route) => false,
+                  );
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      print('Error during sign up: $error');
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text('An error occurred during sign up.'),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -134,7 +170,19 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(
                   height: 30,
                 ),
-                signIn_UpButton(context, false, signUp),
+                signIn_UpButton(context, false, () {
+                  FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                          email: _emailTextController.text,
+                          password: _passwordTextController.text)
+                      .then((value) {
+                    print("Create New Account");
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomePage()));
+                  }).onError((error, stackTrace) {
+                    print("Error ${error.toString()}");
+                  });
+                }),
               ],
             ),
           ),
