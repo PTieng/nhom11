@@ -95,7 +95,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   Expanded(
                     child: MyInputField(
                       title: "End date",
-                      hint: _startTime,
+                      hint: _endTime,
                       widget: IconButton(
                         onPressed: () {
                           _getTimeFromUser(isStartTime: false);
@@ -302,8 +302,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   _getTimeFromUser({required bool isStartTime}) async {
-    var pickedTime = _showTimePicker();
-    String _formatedTime = await pickedTime.format(context);
+    var pickedTime = await _showTimePicker();
+    String _formatedTime = pickedTime.format(context);
     if (pickedTime == null) {
       print("time canceld");
     } else if (isStartTime == true) {
