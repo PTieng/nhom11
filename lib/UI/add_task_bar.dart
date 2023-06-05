@@ -201,15 +201,24 @@ class _AddTaskPageState extends State<AddTaskPage> {
     print("$value");
   }
 
+// Notification when not entering title and note
   _validateDate() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
+      // add to database
       _addTaskToDb();
       Get.back();
     } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
-      Get.snackbar("Required", "All field are required",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.white,
-          icon: Icon(Icons.warning_amber_rounded));
+      Get.snackbar(
+        "Required",
+        "All field are required",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.white,
+        colorText: pinkish,
+        icon: Icon(
+          Icons.warning_amber_rounded,
+          color: Colors.red,
+        ),
+      );
     }
   }
 
