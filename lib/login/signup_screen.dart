@@ -23,6 +23,8 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _phoneTextController = TextEditingController();
   TextEditingController _addressTextController = TextEditingController();
 
+  bool _isObscure = true;
+
   Future<void> signUp() async {
     // Lấy thông tin từ các trường văn bản
     String userName = _userNameTextController.text;
@@ -155,7 +157,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(
                   height: 25,
                 ),
-                reusableTextField("Enter Password", Icons.lock_outline, false,
+                reusableTextField("Enter Password", Icons.lock_outline, true,
                     _passwordTextController),
                 const SizedBox(
                   height: 25,

@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/login/login_screen.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({Key? key}) : super(key: key);
@@ -10,6 +13,39 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   bool isDarkMode = Get.isDarkMode;
+
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  String? name;
+  String? email;
+  String? phone;
+  String? address;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  Future<void> getUserData() async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      DocumentReference userRef = firestore.collection('users').doc(userId);
+      DocumentSnapshot snapshot = await userRef.get();
+      if (snapshot.exists) {
+        setState(() {
+          name = snapshot.get('name');
+          email = snapshot.get('email');
+          phone = snapshot.get('phone');
+          address = snapshot.get('address');
+        });
+      } else {
+        print('User data does not exist');
+      }
+    } catch (e) {
+      print('Error getting user data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,146 +79,23 @@ class _UserPageState extends State<UserPage> {
       ),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 25,
-            ),
-            Container(
-              width: 150,
-              height: 150,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage("images/avatar.jpg"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Text(
-              'User Name',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            const Text(
-              'user@gmail.com',
-              style: TextStyle(fontSize: 15),
-            ),
             Container(
               margin: const EdgeInsets.all(20),
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.person),
-                      Text(
-                        'User Name',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        'Anasnda',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Divider(
-                    color: Color.fromARGB(255, 182, 180, 180),
-                    thickness: 1.0,
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.email),
-                      Text(
-                        'Email ',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Text(
-                        'user@gmail.com',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Divider(
-                    color: Color.fromARGB(255, 182, 180, 180),
-                    thickness: 1.0,
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.phone),
-                      Text(
-                        'Phone ',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        '0315464682',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Divider(
-                    color: Color.fromARGB(255, 182, 180, 180),
-                    thickness: 1.0,
-                  ),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.location_on),
-                      Text(
-                        'Address ',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        width: 15,
-                      ),
-                      Text(
-                        'Ho Chi Minh',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Divider(
-                    color: Color.fromARGB(255, 182, 180, 180),
-                    thickness: 1.0,
-                  ),
-                  const SizedBox(
-                    height: 60,
-                  ),
                   Container(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                         backgroundColor: Colors.red,

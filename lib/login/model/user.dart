@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 class User {
@@ -35,5 +36,15 @@ class User {
         password: map['password'],
         address: map['address'],
         phone: map['phone']);
+  }
+
+  toJosn() {
+    return {
+      "name": name,
+      "email": email,
+      "password": password,
+      "phone": phone,
+      "address": address,
+    };
   }
 }
